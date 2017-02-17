@@ -12,7 +12,7 @@
 #include "test/test.h"
 
 #include "dds/DCPS/StaticIncludes.h"
-#include "BlackADC/BlackADC.h"
+#include "BlackServo/BlackServo.h"
 #include <string>
 #include <iostream>
 
@@ -22,19 +22,9 @@ int
 ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 {
   try {
-
-    BlackLib::BlackADC analog(BlackLib::AIN4 );         // initialization analog input
-    std::string valueStr;
-    int         valueInt;
-    float       valueFloat;
-    valueStr = analog.getValue();
-    usleep(1000);
-    valueInt = analog.getNumericValue();
-    usleep(1000);
-
-
-    valueFloat = analog.getConvertedValue( BlackLib::dap2 );
-
+    BlackLib::BlackServo servoZ(BlackLib::EHRPWM2B);
+    servoZ.write_angle(90);
+    servoZ.ReleasePWM();
     // Initialize DomainParticipantFactory, handling command line args
     DDS::DomainParticipantFactory_var dpf =
       TheParticipantFactoryWithArgs(argc, argv);

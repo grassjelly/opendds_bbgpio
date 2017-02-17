@@ -60,7 +60,8 @@ namespace BlackLib
                                 EHRPWM1B                = P9_16,
                                 EHRPWM0B                = P9_21,
                                 EHRPWM0A                = P9_22,
-                                ECAP0                   = P9_42
+                                ECAP0                   = P9_42,
+								PWMDISABLE              = 100
                             };
 
     /*!
@@ -161,6 +162,8 @@ namespace BlackLib
             *  @sa BlackCorePWM::findPwmTestName()
             *  @sa pwmName
             */
+			                BlackCorePWM(); //default constructor
+
                             BlackCorePWM(pwmName pwm);
 
             /*! @brief Destructor of BlackCorePWM class.
@@ -297,7 +300,7 @@ namespace BlackLib
      * @n <b> (t1+t2) </b> represents "period time" ==> @b 4 units at the figure
      * @n <b> (t2/(t1+t2)) </b> represents "duty ratio" ==> @b 0.25 at the figure
      */
-    class BlackPWM : virtual private BlackCorePWM
+    class BlackPWM : virtual private BlackCorePWM //cancel virtual inheritance for creating BlackServo class later
     {
         private:
             errorPWM        *pwmErrors;                 /*!< @brief is used to hold the errors of BlackPWM class */
@@ -979,6 +982,8 @@ namespace BlackLib
             bool            fail(BlackPWM::flags f);
     };
     // ########################################### BLACKPWM DECLARATION STARTS ############################################ //
+
+
 
 
 

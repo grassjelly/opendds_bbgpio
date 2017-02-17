@@ -63,8 +63,10 @@ add_library(bbgpio_source
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackSPI/BlackSPI.cpp
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackThread/BlackThread.cpp
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackTime/BlackTime.cpp
+	${PROJECT_SOURCE_DIR}/lib/gpio/BlackServo/BlackServo.cpp
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackUART/BlackUART.cpp
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackCore.cpp
+
 )
 
 #DDS Libraries
