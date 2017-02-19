@@ -29,7 +29,7 @@
 
 
 
-#include "BlackPWM.h"
+#include "BlackPWM/BlackPWM.h"
 #include "stdint.h"
 
 
@@ -44,26 +44,32 @@ namespace BlackLib
     BlackCorePWM::BlackCorePWM(pwmName pwm)
     {
         this->pwmPinName    = pwm;
+
         this->pwmCoreErrors = new errorCorePWM( this->getErrorsFromCore() );
+
+				this->pwmTestPath   = "/sys/devices/platform/ocp/" + pwmDev[this->pwmPinName] + "/" + pwmAddr[this->pwmPinName] + "/" + "pwm/" + pwmChip[this->pwmPinName];
 
         this->loadDeviceTree();
 
-        this->pwmTestPath   = "/sys/devices/" + this->getOcpName() + "/" + this->findPwmTestName( this->pwmPinName );
     }
 
 
     BlackCorePWM::~BlackCorePWM()
     {
+				this->unloadDeviceTree();
         delete this->pwmCoreErrors;
     }
 
 
     bool        BlackCorePWM::loadDeviceTree()
     {
-        std::string file    = this->getSlotsFilePath();
+        std::string slotFile    = this->getSlotsFilePath();
+				// /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip6/export
+				std::string exportFile  = this->pwmTestPath + "/export" ;
+
         std::ofstream slotsFile;
 
-        slotsFile.open(file.c_str(), std::ios::out);
+        slotsFile.open(slotFile.c_str(), std::ios::out);
         if(slotsFile.fail())
         {
             slotsFile.close();
@@ -78,8 +84,7 @@ namespace BlackLib
             this->pwmCoreErrors->dtSsError  = false;
         }
 
-
-        slotsFile.open(file.c_str(), std::ios::out);
+        slotsFile.open(exportFile.c_str(), std::ios::out);
         if(slotsFile.fail())
         {
             slotsFile.close();
@@ -88,12 +93,34 @@ namespace BlackLib
         }
         else
         {
-            slotsFile << ("bone_pwm_" + pwmNameMap[this->pwmPinName]);
+            slotsFile << pwmKey[this->pwmPinName];
             slotsFile.close();
             this->pwmCoreErrors->dtError    = false;
             return true;
         }
     }
+
+		bool        BlackCorePWM::unloadDeviceTree()
+	{
+		// /sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip6/export
+		std::string unexportFile  = this->pwmTestPath + "/unexport" ;
+		std::ofstream slotsFile;
+
+		slotsFile.open(unexportFile.c_str(), std::ios::out);
+		if(slotsFile.fail())
+		{
+				slotsFile.close();
+				this->pwmCoreErrors->dtError    = true;
+				return false;
+		}
+		else
+		{
+				slotsFile << pwmKey[this->pwmPinName];
+				slotsFile.close();
+				this->pwmCoreErrors->dtError    = false;
+				return true;
+		}
+	}
 
     std::string BlackCorePWM::findPwmTestName(pwmName pwm)
     {
@@ -160,22 +187,22 @@ namespace BlackLib
 
     std::string BlackCorePWM::getPeriodFilePath()
     {
-        return (this->pwmTestPath + "/period");
+        return (this->pwmTestPath + "/pwm" + pwmKey[this->pwmPinName] + "/period");
     }
 
     std::string BlackCorePWM::getDutyFilePath()
     {
-        return (this->pwmTestPath + "/duty");
+        return (this->pwmTestPath + "/pwm" + pwmKey[this->pwmPinName] + "/duty_cycle");
     }
 
     std::string BlackCorePWM::getRunFilePath()
     {
-        return (this->pwmTestPath + "/run");
+        return (this->pwmTestPath + "/pwm" + pwmKey[this->pwmPinName] + "/enable");
     }
 
     std::string BlackCorePWM::getPolarityFilePath()
     {
-        return (this->pwmTestPath + "/polarity");
+        return (this->pwmTestPath + "/pwm" + pwmKey[this->pwmPinName] + "/polarity");
     }
 
     errorCorePWM *BlackCorePWM::getErrorsFromCorePWM()

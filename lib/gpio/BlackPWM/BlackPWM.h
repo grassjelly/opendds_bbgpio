@@ -31,7 +31,7 @@
 #ifndef BLACKPWM_H_
 #define BLACKPWM_H_
 
-#include "../BlackCore.h"
+#include "BlackCore.h"
 
 #include <iostream>
 #include <fstream>
@@ -48,8 +48,8 @@ namespace BlackLib
     */
     enum pwmName            {   P8_13                   = 0,
                                 P8_19                   = 1,
-                                P9_14                   = 2,
-                                P9_16                   = 3,
+                                P9_14                   = 3,
+                                P9_16                   = 2,
                                 P9_21                   = 4,
                                 P9_22                   = 5,
                                 P9_42                   = 6,
@@ -67,24 +67,51 @@ namespace BlackLib
     /*!
     * This string array is used for mapping pwm name.
     */
-    const std::string pwmNameMap[7] = { "P8_13",
-                                        "P8_19",
-                                        "P9_14",
-                                        "P9_16",
-                                        "P9_21",
-                                        "P9_22",
-                                        "P9_42",
-                                    };
+    ///sys/devices/platform/ocp/48304000.epwmss/48304200.pwm/pwm/pwmchip6
+    ///sys/devices/platform/ocp/48302000.epwmss/48302200.pwm/pwm/pwmchip4
+    ///sys/devices/platform/ocp/48300000.epwmss/48300200.pwm/pwm/pwmchip2
+    ///sys/devices/platform/ocp/48304000.epwmss/48304100.ecap/pwm/pwmchip1
 
-    /*!
-    * This enum is used for setting PWM polarity.
-    */
+    const std::string pwmChip[7] = { "pwmchip6",
+                                        "pwmchip6",
+                                        "pwmchip4",
+                                        "pwmchip4",
+                                        "pwmchip2",
+                                        "pwmchip2",
+                                        "pwmchip1",
+    };
+
     enum polarityType       {   straight                = 0,
                                 reverse                 = 1
                             };
 
 
+    const std::string pwmKey[7] = { "1",
+                            "0",
+                            "0",
+                            "1",
+                            "1",
+                            "0",
+                            "0",
+    };
 
+    const std::string pwmDev[7] = { "48304000.epwmss",
+                                      "48304000.epwmss",
+                                      "48302000.epwmss",
+                                      "48302000.epwmss",
+                                      "48300000.epwmss",
+                                      "48300000.epwmss",
+                                      "48304000.epwmss",
+    };
+
+    const std::string pwmAddr[7] = { "48304200.pwm",
+                                      "48304200.pwm",
+                                      "48302200.pwm",
+                                      "48302200.pwm",
+                                      "48300200.pwm",
+                                      "48300200.pwm",
+                                      "48304100.ecap",
+    };
 
     // ######################################### BLACKCOREPWM DECLARATION STARTS ########################################## //
 
@@ -109,6 +136,7 @@ namespace BlackLib
             *  @return True if successful, else false.
             */
             bool            loadDeviceTree();
+            bool            unloadDeviceTree();
 
             /*! @brief Finds full name of pwm_test.
             *
@@ -673,6 +701,8 @@ namespace BlackLib
             * the new value could not set. This feature is Beaglebone's default.
             */
             bool            setSpaceRatioTime(uint64_t space, timeType tType = nanosecond);
+
+            bool            setDutyCycle(uint64_t);
 
             /*! @brief Sets load time value of pwm signal.
             *

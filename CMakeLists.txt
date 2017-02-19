@@ -66,7 +66,6 @@ add_library(bbgpio_source
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackServo/BlackServo.cpp
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackUART/BlackUART.cpp
 	${PROJECT_SOURCE_DIR}/lib/gpio/BlackCore.cpp
-
 )
 
 #DDS Libraries
@@ -76,6 +75,9 @@ file( GLOB OPENDDS_LIBS
 	${ACE_ROOT}/lib/libTAO.so
 	${ACE_ROOT}/lib/libACE.so
 )
+
+add_executable(gpiotest src/gpiotest.cpp)
+target_link_libraries(gpiotest bbgpio_source)
 
 add_executable(subscriber src/Subscriber.cpp)
 target_link_libraries(subscriber bbgpio_source dds_source ${OPENDDS_LIBS})

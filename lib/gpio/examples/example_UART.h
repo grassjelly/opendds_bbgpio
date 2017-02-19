@@ -58,7 +58,7 @@ void example_UART()
      *                                  enum stopBits uartStopBits, enum characterSize uartCharSize);
      */
 
-    BlackLib::BlackUART uartDemo( BlackLib::UART1,
+    BlackLib::BlackUART uartDemo( BlackLib::UART2,
                                   BlackLib::Baud9600,
                                   BlackLib::ParityEven,
                                   BlackLib::StopOne,

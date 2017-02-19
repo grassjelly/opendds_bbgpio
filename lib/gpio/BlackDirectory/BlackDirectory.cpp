@@ -5,7 +5,7 @@
  *      Author: yigityuce
  */
 
-#include "BlackDirectory.h"
+#include "BlackDirectory/BlackDirectory.h"
 
 namespace BlackLib
 {

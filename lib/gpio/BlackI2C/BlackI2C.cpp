@@ -30,7 +30,7 @@
 
 
 
-#include "BlackI2C.h"
+#include "BlackI2C/BlackI2C.h"
 
 namespace BlackLib
 {

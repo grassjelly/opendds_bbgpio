@@ -5,7 +5,7 @@
  *      Author: yigityuce
  */
 
-#include "BlackMutex.h"
+#include "BlackMutex/BlackMutex.h"
 
 namespace BlackLib
 {

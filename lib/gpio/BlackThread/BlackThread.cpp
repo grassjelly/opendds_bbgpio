@@ -5,7 +5,7 @@
  *      Author: yigityuce
  */
 
-#include "BlackThread.h"
+#include "BlackThread/BlackThread.h"
 
 namespace BlackLib
 {

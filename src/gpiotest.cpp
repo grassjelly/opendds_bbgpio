@@ -1,42 +1,50 @@
- /*
 
- ####################################################################################
- #  BlackLib Library controls Beaglebone Black's inputs and outputs.                #
- #  Copyright (C) 2013-2015 by Yigit YUCE                                           #
- ####################################################################################
- #                                                                                  #
- #  This file is part of BlackLib library.                                          #
- #                                                                                  #
- #  BlackLib library is free software: you can redistribute it and/or modify        #
- #  it under the terms of the GNU Lesser General Public License as published by     #
- #  the Free Software Foundation, either version 3 of the License, or               #
- #  (at your option) any later version.                                             #
- #                                                                                  #
- #  BlackLib library is distributed in the hope that it will be useful,             #
- #  but WITHOUT ANY WARRANTY; without even the implied warranty of                  #
- #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                   #
- #  GNU Lesser General Public License for more details.                             #
- #                                                                                  #
- #  You should have received a copy of the GNU Lesser General Public License        #
- #  along with this program.  If not, see <http://www.gnu.org/licenses/>.           #
- #                                                                                  #
- #  For any comment or suggestion please contact the creator of BlackLib Library    #
- #  at ygtyce@gmail.com                                                             #
- #                                                                                  #
- ####################################################################################
-
- */
-
-#ifndef EXAMPLE_PWM_H_
-#define EXAMPLE_PWM_H_
+#include "BlackADC/BlackADC.h"
+// #include "BlackServo/BlackServo.h"
+#include "BlackPWM/BlackPWM.h"
 
 #include <string>
 #include <iostream>
-#include "../BlackPWM/BlackPWM.h"
+#include <unistd.h>
+using namespace std;
 
-void example_PWM()
+
+void test_adc()
+{
+  BlackLib::BlackADC analog(BlackLib::AIN3); // initialization analog input
+  int analogVal;
+  float angle;
+  while(1){
+    analogVal = analog.getNumericValue();
+    std::cout << analogVal << std::endl;
+    sleep(0.1);
+  }
+}
+
+void test_servo()
 {
 
+  BlackLib::BlackPWM    servo(BlackLib::EHRPWM2B);
+  servo.setDutyPercent(0.0);
+  servo.setPeriodTime(20, BlackLib::milisecond);
+  while(1)
+  {
+    int angle = 90;
+    if(angle < 0) angle = 0;
+    if(angle > 180) angle = 180;
+
+    uint64_t period = 1000.0 / 50.0;
+    int64_t value = ((2.4 - 0.5) / 180.0 * angle + 0.5) * 1000;
+
+    servo.setPeriodTime(period, BlackLib::milisecond);
+    servo.setLoadRatioTime(value, BlackLib::microsecond);
+  }
+  servo.setDutyPercent(0.0);
+
+}
+
+void test_pwm()
+{
     float percent = 5.0;
     std::string currentDuty;
     std::string currentPeriod;
@@ -48,7 +56,7 @@ void example_PWM()
     int64_t currentPeriod_numeric;
     float currentPercentValue_numeric;
 
-    BlackLib::BlackPWM    pwmLed(BlackLib::EHRPWM2A);
+    BlackLib::BlackPWM    pwmLed(BlackLib::EHRPWM2B);
     // if new period value is less than the current duty value, the new period value setting
     // operation couldn't execute. So firstly duty value is set to zero for safe steps.
     pwmLed.setDutyPercent(0.0);
@@ -98,7 +106,14 @@ void example_PWM()
         usleep(500000);
     }
     std::cout << std::endl << "Percent value is out of range." << std::endl;
-
 }
 
-#endif /* EXAMPLE_PWM_H_ */
+
+int main()
+{
+  test_pwm();
+  // test_adc();
+  // test_servo();
+
+  return 0;
+}

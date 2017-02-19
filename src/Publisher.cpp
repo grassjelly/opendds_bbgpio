@@ -12,7 +12,7 @@
 #include "test/test.h"
 
 #include "dds/DCPS/StaticIncludes.h"
-#include "BlackServo/BlackServo.h"
+#include "BlackADC/BlackADC.h"
 #include <string>
 #include <iostream>
 
@@ -22,9 +22,7 @@ int
 ACE_TMAIN(int argc, ACE_TCHAR *argv[])
 {
   try {
-    BlackLib::BlackServo servoZ(BlackLib::EHRPWM2B);
-    servoZ.write_angle(90);
-    servoZ.ReleasePWM();
+
     // Initialize DomainParticipantFactory, handling command line args
     DDS::DomainParticipantFactory_var dpf =
       TheParticipantFactoryWithArgs(argc, argv);
@@ -45,37 +43,28 @@ ACE_TMAIN(int argc, ACE_TCHAR *argv[])
     Template::MessageDataWriter_var msg_writer = narrow(writer);
 
     {
+      BlackLib::BlackADC analog(BlackLib::AIN3); // initialization analog input
+      int analogVal;
+      Template::Message message;
       // Block until Subscriber is available
       OpenDDS::Model::WriterSync ws(writer);
 
-      // Initialize samples
-      Template::Message message;
-      message.data = TEST_VAR;
+      while(1){
 
-      // Override message count
-      int msg_count = 10;
-      if (argc > 1) {
-        msg_count = ACE_OS::atoi(argv[1]);
-      }
+        analogVal = analog.getNumericValue();
 
-      for (int i = 0; i < msg_count; ++i) {
-        // Publish the message
-        DDS::ReturnCode_t error = msg_writer->write(message,
-                                                    DDS::HANDLE_NIL);
+        message.data = analogVal;
+
+        DDS::ReturnCode_t error = msg_writer->write(message, DDS::HANDLE_NIL);
         if (error != DDS::RETCODE_OK) {
           ACE_ERROR((LM_ERROR,
                      ACE_TEXT("ERROR: %N:%l: main() -")
                      ACE_TEXT(" write returned %d!\n"), error));
         }
-
-        // Prepare next sample
-        // ++message.count;
-        // ++message.subject_id;
+        sleep(0.2);
       }
-
       // End of WriterSync scope - block until messages acknowledged
     }
-
     // Clean-up!
     cleanup(participant, dpf);
 
